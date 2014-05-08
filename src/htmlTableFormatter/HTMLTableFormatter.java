@@ -8,15 +8,77 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class HTMLTableFormatter {
-	private static final boolean verbose = false;
+	private static boolean verbose = false;
 	private static int tableWidth = -1;
+	private static boolean customid = false;
+	private static String id;
 
 	public static void main(String[] args) {
-		// args filename TODO
 		ArrayList<String> arrTable;
 		String finalHTML = "";
 		String fileName = "input.txt";
 		String outputFileName = "output.html";
+		boolean error = false;
+		//set verbose
+		if(args.toString().contains("-v")){
+			verbose = true;
+		}
+		
+		//set id
+		if(args.toString().contains("-id")){
+			//there is a custom id set
+			int arrPos = -1;
+			for(int i=0;i<args.length;i++){
+				if args[i].equals("-id"){
+					arrPos = i;
+					break;
+				}
+			}
+			if(arrPos == -1){
+				error = true;
+				errorln("Somehow there was an error with the -id command. Exiting.");
+			}
+			if(i+1 > args.length){
+				error = true;
+				errorln("No input filename specified after -id command. Exiting.");
+			}
+			if(!error){
+				customid = true;
+				id = args[i+1];
+			}
+		}
+		
+		// args filename TODO
+		if(args.toString().contains("-i")){
+			//there is an input filename
+			int arrPos = -1;
+			for(int i=0;i<args.length;i++){
+				if args[i].equals("-i"){
+					arrPos = i;
+					break;
+				}
+			}
+			if(arrPos == -1){
+				error = true;
+				errorln("Somehow there was an error with the -i command. Exiting.");
+			}
+			if(i+1 > args.length){
+				error = true;
+				errorln("No input filename specified after -i command. Exiting.");
+			}
+			if(!error){
+				fileName = args[i+1];
+				
+				if(fileName.contains('.')){
+					outputFileName = substring(0, fileName.lastIndexOf('.')) + ".html";
+				}else{
+					outputFileName = fileName + ".html";
+				}
+			}
+		}else{
+			outln("No filename specified in parameters. Using default input.txt and output.html.");
+		}
+		
 		
 		//read input into arraylist
 		arrTable = readInput(fileName);
@@ -29,7 +91,7 @@ public class HTMLTableFormatter {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(outputFileName));
 			bw.write(finalHTML);
 			bw.close();
-			System.out.println("Output to " + outputFileName + " Complete!\n\n");
+			outln("Output to " + outputFileName + " Complete!\n\n");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -37,11 +99,18 @@ public class HTMLTableFormatter {
 	}
 	
 	private static String convert2String(ArrayList<String> arrTable) {
-		String out = "<table>";
+		String out = "<table";
+		if(customid) out+= " id=\"" + id + "\" ";
+		out += ">";
 		int width = tableWidth;
 		int cnt = 0;
+		int rowcnt = 0;
 		for(String s : arrTable){
-			if(cnt % width == 0) out += "<tr>";
+			if(cnt % width == 0){
+				if(rowcnt == 0) out += "<tr>";
+				if(rowcnt > 0 && rowcnt % 2 = 0) cout += "<tr class=\"even\">";
+				if(rowcnt > 0 && rowcnt % 2 = 1) cout += "<tr class=\"odd\">";
+			}
 			if(cnt < width){
 				out += "<th class=\"col" + ((cnt % width) + 1) + "\">" + s + "</th>";
 			}else{
@@ -66,7 +135,7 @@ public class HTMLTableFormatter {
 				if(strLine.contains("\"")){
 					//santize ","'s!
 					strLine = sanitizeCommas(strLine);
-					if(verbose) System.out.println("strLine sanitized: " + strLine);
+					debugln("strLine sanitized: " + strLine);
 					
 				}
 				
@@ -81,7 +150,7 @@ public class HTMLTableFormatter {
 			}
 			br.close();
 			
-			System.out.println("Input read...");
+			outln("Input read...");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -121,6 +190,24 @@ public class HTMLTableFormatter {
 	
 	public static void setWidth(int width){
 		tableWidth = width;
+	}
+	
+	public static void debugln(string str){
+		if(verbose){
+			System.out.println(str);
+		}
+	}
+	
+	public static void errorln(string str){
+		System.err.println(str);
+	}
+	
+	public static void outln(string str){
+		System.out.println(str);
+	}
+	
+	public static void out(string str){
+		System.out.print(str);
 	}
 
 }
