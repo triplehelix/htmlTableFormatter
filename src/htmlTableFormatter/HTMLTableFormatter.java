@@ -20,16 +20,18 @@ public class HTMLTableFormatter {
 		String outputFileName = "output.html";
 		boolean error = false;
 		//set verbose
-		if(args.toString().contains("-v")){
+		String argsStr = argStringBuilder(args);
+		if(argsStr.contains("-v")){
 			verbose = true;
 		}
+		debugln("args: " + argsStr);
 		
 		//set id
-		if(args.toString().contains("-id")){
+		if(argsStr.contains("-id")){
 			//there is a custom id set
 			int arrPos = -1;
 			for(int i=0;i<args.length;i++){
-				if args[i].equals("-id"){
+				if(args[i].equals("-id")){
 					arrPos = i;
 					break;
 				}
@@ -38,22 +40,22 @@ public class HTMLTableFormatter {
 				error = true;
 				errorln("Somehow there was an error with the -id command. Exiting.");
 			}
-			if(i+1 > args.length){
+			if(arrPos + 1 > args.length){
 				error = true;
 				errorln("No input filename specified after -id command. Exiting.");
 			}
 			if(!error){
 				customid = true;
-				id = args[i+1];
+				id = args[arrPos+1];
 			}
 		}
 		
-		// args filename TODO
-		if(args.toString().contains("-i")){
+		// args filename
+		if(argsStr.contains("-i")){
 			//there is an input filename
 			int arrPos = -1;
 			for(int i=0;i<args.length;i++){
-				if args[i].equals("-i"){
+				if(args[i].equals("-i")){
 					arrPos = i;
 					break;
 				}
@@ -62,15 +64,15 @@ public class HTMLTableFormatter {
 				error = true;
 				errorln("Somehow there was an error with the -i command. Exiting.");
 			}
-			if(i+1 > args.length){
+			if(arrPos+1 > args.length){
 				error = true;
 				errorln("No input filename specified after -i command. Exiting.");
 			}
 			if(!error){
-				fileName = args[i+1];
+				fileName = args[arrPos+1];
 				
-				if(fileName.contains('.')){
-					outputFileName = substring(0, fileName.lastIndexOf('.')) + ".html";
+				if(fileName.contains(".")){
+					outputFileName = fileName.substring(0, fileName.lastIndexOf('.')) + ".html";
 				}else{
 					outputFileName = fileName + ".html";
 				}
@@ -108,8 +110,9 @@ public class HTMLTableFormatter {
 		for(String s : arrTable){
 			if(cnt % width == 0){
 				if(rowcnt == 0) out += "<tr>";
-				if(rowcnt > 0 && rowcnt % 2 = 0) cout += "<tr class=\"even\">";
-				if(rowcnt > 0 && rowcnt % 2 = 1) cout += "<tr class=\"odd\">";
+				if(rowcnt > 0 && rowcnt % 2 == 0) out += "<tr class=\"even\">";
+				if(rowcnt > 0 && rowcnt % 2 == 1) out += "<tr class=\"odd\">";
+				rowcnt++;
 			}
 			if(cnt < width){
 				out += "<th class=\"col" + ((cnt % width) + 1) + "\">" + s + "</th>";
@@ -150,7 +153,7 @@ public class HTMLTableFormatter {
 			}
 			br.close();
 			
-			outln("Input read...");
+			outln("Input read from " + fn + "...");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -188,25 +191,33 @@ public class HTMLTableFormatter {
 		return out;
 	}
 	
+	private static String argStringBuilder(String[] arr){
+		StringBuilder builder = new StringBuilder();
+		for(String s : arr) {
+		    builder.append(s + " ");
+		}
+		return builder.toString();
+	}
+	
 	public static void setWidth(int width){
 		tableWidth = width;
 	}
 	
-	public static void debugln(string str){
+	public static void debugln(String str){
 		if(verbose){
 			System.out.println(str);
 		}
 	}
 	
-	public static void errorln(string str){
+	public static void errorln(String str){
 		System.err.println(str);
 	}
 	
-	public static void outln(string str){
+	public static void outln(String str){
 		System.out.println(str);
 	}
 	
-	public static void out(string str){
+	public static void out(String str){
 		System.out.print(str);
 	}
 
